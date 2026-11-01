@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Two unix platforms: the atom is pure JDK NIO (no shelling out, no platform specific paths), and the smoke harness is
+# bash + python3. A windows runner would mostly test git-bash, not the atom.
+jobs:
+  atom:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/checkout@v4
+        with:
+          repository: hummerstudio/jenkins-atom-sdk
+          path: jenkins-atom-sdk
+      - name: Build the SDK
+        working-directory: jenkins-atom-sdk
+        run: mvn -B -ntp -q package -DskipTests
+      - name: Build and smoke test the atom
+        shell: bash
+        run: ./tools/smoke.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gatling-report-atom-${{ matrix.os }}
+          path: dist/gatling-report/

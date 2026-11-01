@@ -1,0 +1,145 @@
+{
+  "atomCode": "gatling-report",
+  "name": "Gatling report",
+  "version": "1.0.0",
+  "description": "解析 Gatling 测试报告（global_stats.json 或文本 simulation.log），统计成功/失败请求与延迟，按阈值卡口，并产出一份自包含 HTML 报告。",
+  "execution": {
+    "packagePath": "gatling-report.jar",
+    "language": "java",
+    "target": "$atom_java_path -cp gatling-report.jar com.jenkinschina.atom.sdk.AtomRunner"
+  },
+  "input": {
+    "pattern": {
+      "label": "报告文件 glob（逗号分隔；global_stats.json 与 simulation.log）",
+      "type": "vuex-input",
+      "default": "**/global_stats.json, **/simulation.log"
+    },
+    "label": {
+      "label": "报告名称",
+      "type": "vuex-input",
+      "default": "Gatling"
+    },
+    "outputDir": {
+      "label": "HTML 输出目录（相对工作区）",
+      "type": "vuex-input",
+      "default": "out/gatling"
+    },
+    "maxFailureCount": {
+      "label": "最多允许失败请求数（留空不限，0 表示一个都不许失败）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "maxFailurePercent": {
+      "label": "最多允许失败百分比（留空不限）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "maxMeanResponseTimeMs": {
+      "label": "平均响应时间上限（毫秒，留空不限）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "maxPercentile95Ms": {
+      "label": "P95 响应时间上限（毫秒，留空不限）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "maxPercentile99Ms": {
+      "label": "P99 响应时间上限（毫秒，留空不限）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "failOnThreshold": {
+      "label": "超过阈值就让这一步失败（否则只标记 UNSTABLE）",
+      "type": "checkbox",
+      "default": "true"
+    },
+    "failOnAssertionFailure": {
+      "label": "Gatling 断言失败也让这一步失败",
+      "type": "checkbox",
+      "default": "true"
+    },
+    "markUnstable": {
+      "label": "有失败请求/失败断言但没超阈值时标记 UNSTABLE",
+      "type": "checkbox",
+      "default": "true"
+    },
+    "maxRows": {
+      "label": "HTML 里最多列多少个请求",
+      "type": "vuex-input",
+      "default": "200"
+    }
+  },
+  "output": {
+    "simulations": {
+      "type": "string",
+      "description": "识别到的 simulation 数"
+    },
+    "requests": {
+      "type": "string",
+      "description": "请求总数"
+    },
+    "okRequests": {
+      "type": "string",
+      "description": "成功请求数"
+    },
+    "koRequests": {
+      "type": "string",
+      "description": "失败请求数（Gatling 的 ko）"
+    },
+    "koPercent": {
+      "type": "string",
+      "description": "失败百分比（保留一位小数）"
+    },
+    "meanResponseTimeMs": {
+      "type": "string",
+      "description": "平均响应时间（毫秒，按请求数加权）"
+    },
+    "p95ResponseTimeMs": {
+      "type": "string",
+      "description": "P95 响应时间（毫秒）"
+    },
+    "p99ResponseTimeMs": {
+      "type": "string",
+      "description": "P99 响应时间（毫秒）"
+    },
+    "maxResponseTimeMs": {
+      "type": "string",
+      "description": "最大响应时间（毫秒）"
+    },
+    "assertionTotal": {
+      "type": "string",
+      "description": "Gatling 断言总数（没有 assertions.json 时为 0）"
+    },
+    "assertionPassed": {
+      "type": "string",
+      "description": "通过的断言数"
+    },
+    "assertionFailed": {
+      "type": "string",
+      "description": "失败的断言数"
+    },
+    "thresholdBreaches": {
+      "type": "string",
+      "description": "超阈值项数"
+    },
+    "thresholdSummary": {
+      "type": "string",
+      "description": "超阈值说明（没有则 no threshold breached）"
+    },
+    "report": {
+      "type": "report",
+      "description": "构建页内嵌的自包含 HTML 报告"
+    },
+    "buildResult": {
+      "type": "string",
+      "description": "请求的构建结果（有失败但未超阈值时为 UNSTABLE）"
+    }
+  },
+  "x-jenkins": {
+    "protocol": "jenkins-1",
+    "requires": {
+      "runner": ">=0.4.0"
+    }
+  }
+}

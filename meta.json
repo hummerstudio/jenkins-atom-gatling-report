@@ -1,0 +1,12 @@
+{
+  "name": "Gatling report",
+  "summary": "Read a Gatling report (global_stats.json or the text simulation.log), gate on failure counts / error rate / mean / p95 / p99, and publish one self-contained HTML page.",
+  "author": "hummerstudio",
+  "license": "MIT",
+  "tags": [
+    "official-port",
+    "gatling",
+    "performance"
+  ],
+  "homepage": "https://github.com/hummerstudio/jenkins-atom-gatling-report"
+}
