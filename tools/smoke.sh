@@ -141,6 +141,14 @@ grep -q 'maxPercentile95Ms breached: 300 ms > 299 ms' "$ws/output.json" || fail 
 [ "$(grep -o 'BREACH' "$page" | wc -l | tr -d ' ')" = "5" ] || fail "the page must mark 5 breaches"
 grep -q 'thresholds breached' "$page" || fail "no breach banner in the page"
 
+# ...and failOnThreshold=false turns the same breaches into an UNSTABLE build instead of a failure
+printf '{"pattern": "**/global_stats.json", "label": "B", "maxFailurePercent": "0.5", "failOnThreshold": "false"}' >"$ws/input.json"
+run "$ws" >"$ws/log.txt" 2>&1 || fail "failOnThreshold=false: $(cat "$ws/output.json")"
+[ "$(status "$ws")" = "success" ] || fail "status: $(cat "$ws/output.json")"
+[ "$(output "$ws" thresholdBreaches)" = "1" ] || fail "the breach must still be counted: $(cat "$ws/output.json")"
+grep -q '"build.result":{"type":"string","value":"UNSTABLE"}' "$ws/output.json" \
+  || fail "a breach that is not failing the step must ask for UNSTABLE: $(cat "$ws/output.json")"
+
 # --- 4. two simulations, gatling assertions, and the aggregate the gate looks at ---------------------------------
 ws2="$(mktemp -d)"
 stats "$ws2/a/js/global_stats.json" 1000 990 10 120 50 90 300 600 4000
