@@ -91,7 +91,7 @@ A limit is a maximum: `actual == limit` passes, `actual > limit` breaches.
 `thresholdSummary`, `report`, `buildResult` (plus the runner's `build.result` key when `UNSTABLE` is requested).
 
 None of these names collides with an input, and no two differ only by case — the runner merges the build environment
-into the next step's inputs, so an output called `label` would pin the next step's label. `tools/smoke.sh` asserts
+into the next step's inputs, so an output called `label` would pin the next step's label. `src/test/java/atom/GatlingReportIT.java` asserts
 that invariant against `task.json`.
 
 ## Errors
@@ -126,10 +126,8 @@ that invariant against `task.json`.
 ## Build and test
 
 ```bash
-export JAVA_HOME=~/tools/jdk-21.0.12.1+1/Contents/Home
-./build.sh          # dist/gatling-report/gatling-report.jar (+ task.json, meta.json)
-./tools/smoke.sh    # offline: fixtures for both report shapes, thresholds, assertions, error codes
+mvn verify    # dist/gatling-report/gatling-report.jar (+ task.json, meta.json) 和 14 个 JUnit 用例
 ```
 
-The smoke makes no network calls: every fixture is written into a throwaway workspace, and every case asserts the
+The tests make no network calls: every fixture is written into a throwaway workspace, and every case asserts the
 numbers a build would gate on (plus that the page it wrote contains them).
